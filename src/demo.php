@@ -57,13 +57,13 @@ $query = $service->orders_get();
 $query = $service->order_delete();
 */
 
-/*
+
 $query = $service->newcAccount();
 $query->Get();
 $data = $service->getNicQuery($query);
 foreach ($data->entries as $entry) {
-	echo $entry->payments."\n";
-	echo $entry->blockable."\n";
+	echo "payments: ".$entry->payments."\n";
+	echo "blockable: ".$entry->blockable."\n";
 }
-*/
+
 ?>
