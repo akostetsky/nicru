@@ -78,7 +78,7 @@ class cNicApp {
             throw new Exception("No such method ${sMethod}");
         }
 	} // eof __call
-	public function getQuery($aData, $className='Zend_Gdata_App_Feed')
+	public function getQuery($aData, $className='Feed')
     {
         return $this->importUrl($aData, $className);
     } // eof getQuery
@@ -97,13 +97,20 @@ class cNicApp {
     	foreach(array_slice($aData, 0, 2) as $value){
     		$aTemp = explode(":", $value);
     		$aStatus[$aTemp[0]] = trim($aTemp[1]);
+    		
     	}
     	return ($aStatus["State"]=="200 OK")?false:true;
     }
-	public function importUrl($aData, $className='Zend_Gdata_App_Feed') {
+    /**
+     * Формирование запроса и обработка ответа. 
+     * @param array $aData - входящие данные
+     * @param sting $className - имя класса для маппинга данных
+     */
+	public function importUrl($aData, $className='Feed') {
 		$response = $this->get($aData);
         $QueryContent = $response->getBody();
         if($this->getStatus($QueryContent)){
+        	print_r($QueryContent);
         	throw new Exception("Unexpected API status");
         	return null;
         }
@@ -126,6 +133,7 @@ class cNicApp {
         } else {
             $sRequestData .= '';
         }
+        var_dump($sRequestData);
         return $sRequestData ;
 		
 	} // eof prepareRequest
@@ -146,6 +154,11 @@ class cNicApp {
 		}
     	return $response;
     }
+    /**
+     * Разбор ответа в классы
+     * @param string $string - строка ответа удаленного сервера
+     * @param string $className - имя класса для маппинга данных
+     */
 	public static function importString($string, $className='Feed')
     {
         if (!class_exists($className, false)) {

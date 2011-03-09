@@ -14,16 +14,40 @@ $query = $service->redeleg_online_lose();
 $query = $service->redeleg_online_gain();
 $query = $service->order_pickup_domain_ru_su();
 $query = $service->domain_net_com();
-$query = $service->contract_create_org();
-$query = $service->contract_create_pbul();
-$query = $service->contract_create_prs();
-$query = $service->contract_search();
-$query = $service->contract_get();
+*/
+$query = $service->newcContract();
+
+$query->CreateOrg();
+$data = $service->getNicQuery($query);
+foreach ($data->entries as $entry) {
+	echo "login Org: ".$entry->login."\n";
+}
+
+$query->CreatePbul();
+$data = $service->getNicQuery($query);
+foreach ($data->entries as $entry) {
+	echo "login Pbul: ".$entry->login."\n";
+}
+
+$query->CreatePrs();
+$data = $service->getNicQuery($query);
+foreach ($data->entries as $entry) {
+	echo "login Prs: ".$entry->login."\n";
+}
+
+$query->Search();
+$data = $service->getNicQuery($query);
+
+$query->Get();
+$data = $service->getNicQuery($query);
+
 $query = $service->contract_update_org();
 $query = $service->contract_update_pbul();
 $query = $service->contract_update_prs();
+
 $query = $service->contract_id();
 $query = $service->contract_delete();
+/*
 $query = $service->objects_search();
 $query = $service->services_search();
 $query = $service->domain_search();
@@ -56,7 +80,6 @@ $query = $service->orders_search();
 $query = $service->orders_get();
 $query = $service->order_delete();
 */
-
 
 $query = $service->newcAccount();
 $query->Get();
