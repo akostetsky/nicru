@@ -1,22 +1,46 @@
 <?php
 /** 
- * @author alexkost
- * 
+ * Класс реализующий работу с API http://www.nic.ru/
+ * @author Alexander Kostetsky
  * 
  */
 class cNicApp {
-	//TODO - Insert your code here
+	/**
+	 * Экземпляр класса HTTP_Request2
+	 * @var HTTP_Request2
+	 */
 	protected $_httpClient;
+	/**
+	 * Статический экземпляр класса HTTP_Request2
+	 * @var unknown_type
+	 */
 	protected static $_staticHttpClient = null;
+	/*
+	 * Константа URL API
+	 */
 	const sApiUrl = "https://www.nic.ru/dns/dealer";
+	/*
+	 * Константа название формы для работы с API
+	 */
 	const sFormField = "SimpleRequest";
 	 
+	/**
+	 * Инициализация класса и сохранение класса  HTTP_Request2
+	 * @param unknown_type $client
+	 */
 	function __construct($client = null) {
 		$this->setHttpClient($client);
 	}
+	/**
+	 * Возвращает экземпляр класса HTTP_Request2
+	 */
  	public function getHttpClient() {
         return $this->_httpClient;
     }
+    /**
+     * Сохранияет или создает экземплярпы класса HTTP_Request2 
+     * @param $client
+     */
     public function setHttpClient($client) {
         if ($client === null) {
             $client = new HTTP_Request2();
@@ -28,13 +52,17 @@ class cNicApp {
         self::setStaticHttpClient($client);
         return $this;
     }
+    /**
+     * Сораняет статический экземпляр класса HTTP_Request2
+     * @param HTTP_Request2 $httpClient
+     */
     public static function setStaticHttpClient(HTTP_Request2 $httpClient)
     {
         self::$_staticHttpClient = $httpClient;
     }
     
 	/**
-	 * 
+	 * Удаляльщик 
 	 */
 	function __destruct() {
 		
@@ -84,7 +112,7 @@ class cNicApp {
     } // eof getQuery
     
     /**
-     * 
+     * Возвращает статутс API
      * @param boolean $data - статус API
      * @todo 
      *  <ol>
@@ -117,11 +145,18 @@ class cNicApp {
         $feed = self::importString($QueryContent, $className);
         return $feed;
     } // eof importUrl
-	
+	/**
+	 * Формирует запрос к API, выполянет его и получает ответ
+	 * @param $aData
+	 */
     public function get($aData)
     {
         return $this->performHttpRequest($this->prepareRequest($aData));
     } // eof get
+    /**
+     * Формирует запрос к API ( массив в строку ) 
+     * @param unknown_type $aData
+     */
 	public function prepareRequest($aData){
 		$sRequestData = "";
 		$queryArray = array();
@@ -137,6 +172,10 @@ class cNicApp {
         return $sRequestData ;
 		
 	} // eof prepareRequest
+	/**
+	 * Выполняет запрос к API 
+	 * @param unknown_type $sBody
+	 */
 	public function performHttpRequest($sBody)
     {
     	$this->_httpClient->setHeader("Content-Type","application/x-www-form-urlencoded");
@@ -153,7 +192,7 @@ class cNicApp {
     		echo 'Error: ' . $e->getMessage();
 		}
     	return $response;
-    }
+    } // eof performHttpRequest
     /**
      * Разбор ответа в классы
      * @param string $string - строка ответа удаленного сервера
@@ -167,7 +206,7 @@ class cNicApp {
 	    $feed = new $className();
         $feed->transferFromString($string);
         return $feed;
-    }
+    } // eof importString
     
 
 }
