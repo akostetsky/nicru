@@ -16,17 +16,53 @@ $query = $service->domain_net_com();
 */
 $query = $service->newcContract();
 
-$query->CreateOrg();
+$aData = array();
+$aData['password']="123password123";
+$aData['tech-password']="123techpassword123";
+$aData['org']="Joint Stock Company";
+$aData['org-r']="Закрытое Акционерное Общество";
+$aData['code']="1234567894";
+$aData['kpp']="123456789";
+$aData['country']="RU";
+$aData['currency-id']="RUR";
+$aData['address-r']="123456, Москва, ул. Йобачкина, д.13а";
+$aData['p-addr']="123456, Москва, ул. Йобачкина, д.13а";
+$aData['d-addr']="123456, Москва, ул. Йобачкина, д.13а";
+$aData['phone']="+7 495 1234567";
+$aData['fax-no']="+7 495 1234567";
+$aData['e-mail']="finster.seele@gmail.com"; 
+$aData['mnt-nfy']="alexk@sl.ru"; 
+
+$query->CreateOrg($aData);
 $data = $service->getNicQuery($query);
 foreach ($data->entries as $entry) {
 	echo "login Org: ".$entry->login."\n";
 }
 
-$query->CreatePbul();
+$aData = array();
+$aData['password']="123password123";
+$aData['tech-password']="123techpassword123";
+$aData['org']="Joint Stock Company";
+$aData['org-r']="Закрытое Акционерное Общество";
+$aData['code']="1234567894";
+$aData['kpp']="123456789";
+$aData['country']="RU";
+$aData['currency-id']="RUR";
+$aData['address-r']="123456, Москва, ул. Йобачкина, д.13а";
+$aData['p-addr']="123456, Москва, ул. Йобачкина, д.13а";
+$aData['d-addr']="123456, Москва, ул. Йобачкина, д.13а";
+$aData['phone']="+7 495 1234567";
+$aData['fax-no']="+7 495 1234567";
+$aData['e-mail']="finster.seele@gmail.com"; 
+$aData['mnt-nfy']="alexk@sl.ru"; 
+
+$query->CreatePbul($aData);
 $data = $service->getNicQuery($query);
 foreach ($data->entries as $entry) {
 	echo "login Pbul: ".$entry->login."\n";
 }
+
+die("not yet!"); 
 
 $query->CreatePrs();
 $data = $service->getNicQuery($query);

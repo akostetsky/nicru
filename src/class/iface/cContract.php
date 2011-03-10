@@ -26,7 +26,8 @@ class cContract extends cNicRequests {
 	function __destruct() {
 		
 	}
-	private function Create(){
+	private function Create($aData = array()){
+		$this->_aParam = array_merge($this->_aParam,$aData);
 		$this->_params["operation"]="create";
 	}
 	/**
@@ -35,14 +36,14 @@ class cContract extends cNicRequests {
 	 */
 	public function CreatePbul($aData = array()){
 		$this->_aParam['contract-type']='PRS';
-		$this->Create();
+		$this->Create($aData);
 	} // eof CreatePbul
 	/**
 	 * Создание анкеты клиента для юридического лица
 	 */
 	public function CreateOrg($aData = array()){
 		$this->_aParam['contract-type']='ORG';
-		$this->Create();
+		$this->Create($aData);
 	} // eof CreateOrg
 	/**
 	 * Создание анкеты клиента для физического лица
@@ -50,7 +51,7 @@ class cContract extends cNicRequests {
 	 */
 	public function CreatePrs($aData = array()){
 		$this->_aParam['contract-type']='PRS';
-		$this->Create();
+		$this->Create($aData);
 	} // eof CreatePrs
 	public function getQueryData()
     {

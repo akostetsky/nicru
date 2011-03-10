@@ -1,44 +1,46 @@
 <?php
 /** 
- * Љласс реализующий работу с API http://www.nic.ru/
+ * РљР»Р°СЃСЃ СЂРµР°Р»РёР·СѓСЋС‰РёР№ СЂР°Р±РѕС‚Сѓ СЃ API http://www.nic.ru/
  * @author Alexander Kostetsky
  * 
  */
 class cNicApp {
+	const sFrom = "KOI8-R";
+	const sTo = "UTF-8";
 	/**
-	 * ќкземплЯр класса HTTP_Request2
+	 * Р­РєР·РµРјРїР»СЏСЂ РєР»Р°СЃСЃР° HTTP_Request2
 	 * @var HTTP_Request2
 	 */
 	protected $_httpClient;
 	/**
-	 * ‘татический экземплЯр класса HTTP_Request2
+	 * РЎС‚Р°С‚РёС‡РµСЃРєРёР№ СЌРєР·РµРјРїР»СЏСЂ РєР»Р°СЃСЃР° HTTP_Request2
 	 * @var unknown_type
 	 */
 	protected static $_staticHttpClient = null;
 	/*
-	 * Љонстанта URL API
+	 * РљРѕРЅСЃС‚Р°РЅС‚Р° URL API
 	 */
 	const sApiUrl = "https://www.nic.ru/dns/dealer";
 	/*
-	 * Љонстанта название формы длЯ работы с API
+	 * РљРѕРЅСЃС‚Р°РЅС‚Р° РЅР°Р·РІР°РЅРёРµ С„РѕСЂРјС‹ РґР»СЏ СЂР°Р±РѕС‚С‹ СЃ API
 	 */
 	const sFormField = "SimpleRequest";
 	 
 	/**
-	 * €нициализациЯ класса и сохранение класса  HTTP_Request2
+	 * РРЅРёС†РёР°Р»РёР·Р°С†РёСЏ РєР»Р°СЃСЃР° Рё СЃРѕС…СЂР°РЅРµРЅРёРµ РєР»Р°СЃСЃР°  HTTP_Request2
 	 * @param unknown_type $client
 	 */
 	function __construct($client = null) {
 		$this->setHttpClient($client);
 	}
 	/**
-	 * ‚озвращает экземплЯр класса HTTP_Request2
+	 * Р’РѕР·РІСЂР°С‰Р°РµС‚ СЌРєР·РµРјРїР»СЏСЂ РєР»Р°СЃСЃР° HTTP_Request2
 	 */
  	public function getHttpClient() {
         return $this->_httpClient;
     }
     /**
-     * ‘охраниЯет или создает экземплЯрпы класса HTTP_Request2 
+     * РЎРѕС…СЂР°РЅРёСЏРµС‚ РёР»Рё СЃРѕР·РґР°РµС‚ СЌРєР·РµРјРїР»СЏСЂРїС‹ РєР»Р°СЃСЃР° HTTP_Request2 
      * @param $client
      */
     public function setHttpClient($client) {
@@ -53,7 +55,7 @@ class cNicApp {
         return $this;
     }
     /**
-     * ‘оранЯет статический экземплЯр класса HTTP_Request2
+     * РЎРѕСЂР°РЅСЏРµС‚ СЃС‚Р°С‚РёС‡РµСЃРєРёР№ СЌРєР·РµРјРїР»СЏСЂ РєР»Р°СЃСЃР° HTTP_Request2
      * @param HTTP_Request2 $httpClient
      */
     public static function setStaticHttpClient(HTTP_Request2 $httpClient)
@@ -62,14 +64,14 @@ class cNicApp {
     }
     
 	/**
-	 * “далЯльщик 
+	 * РЈРґР°Р»СЏР»СЊС‰РёРє 
 	 */
 	function __destruct() {
 		
 	//TODO - Insert your code here
 	} // eof __destruct
 	public function __call($sMethod, $aArgs){
-		if (preg_match('/^new(\w+)/', $sMethod, $aMatches)) {
+		if (preg_match('/^new(\w+)/', $sMethod, $aMatches)){
 			$sClass = $aMatches[1];
 			$foundClassName = null;
             foreach ($this->_registeredPackages as $name) {
@@ -85,7 +87,7 @@ class cNicApp {
                      // package wasn't here- continue searching
                  }
             }
-            if ($foundClassName != null) {
+            if ($foundClassName != null){
                 $reflectionObj = new ReflectionClass($foundClassName);
                 $instance = $reflectionObj->newInstanceArgs($aArgs);
                 if ($instance instanceof Zend_Gdata_App_FeedEntryParent) {
@@ -102,7 +104,7 @@ class cNicApp {
                 require_once 'Zend/Gdata/App/Exception.php';
                 throw new Exception("Unable to find '${sClass}' in registered packages");
             }
-        }else{
+        } else {
             throw new Exception("No such method ${sMethod}");
         }
 	} // eof __call
@@ -112,11 +114,11 @@ class cNicApp {
     } // eof getQuery
     
     /**
-     * ‚озвращает статутс API
-     * @param boolean $data - статус API
+     * Р’РѕР·РІСЂР°С‰Р°РµС‚ СЃС‚Р°С‚СѓС‚СЃ API
+     * @param boolean $data - СЃС‚Р°С‚СѓСЃ API
      * @todo 
      *  <ol>
-     *  <li>„обавить логирование</li>
+     *  <li>Р”РѕР±Р°РІРёС‚СЊ Р»РѕРіРёСЂРѕРІР°РЅРёРµ</li>
      *  </ol> 
      */
     public function getStatus($data){
@@ -130,13 +132,17 @@ class cNicApp {
     	return ($aStatus["State"]=="200 OK")?false:true;
     }
     /**
-     * ”ормирование запроса и обработка ответа. 
-     * @param array $aData - входЯщие данные
-     * @param sting $className - имЯ класса длЯ маппинга данных
+     * Р¤РѕСЂРјРёСЂРѕРІР°РЅРёРµ Р·Р°РїСЂРѕСЃР° Рё РѕР±СЂР°Р±РѕС‚РєР° РѕС‚РІРµС‚Р°. 
+     * @param array $aData - РІС…РѕРґСЏС‰РёРµ РґР°РЅРЅС‹Рµ
+     * @param sting $className - РёРјСЏ РєР»Р°СЃСЃР° РґР»СЏ РјР°РїРїРёРЅРіР° РґР°РЅРЅС‹С…
      */
 	public function importUrl($aData, $className='Feed') {
 		$response = $this->get($aData);
         $QueryContent = $response->getBody();
+        $QueryContent = iconv(self::sFrom,self::sTo,$QueryContent);
+       // echo "\n\n\nRSP:\n";
+       // print_r($QueryContent);
+       // echo "\n\n[eof]\n\n";
         if($this->getStatus($QueryContent)){
         	print_r($QueryContent);
         	throw new Exception("Unexpected API status");
@@ -146,7 +152,7 @@ class cNicApp {
         return $feed;
     } // eof importUrl
 	/**
-	 * ”ормирует запрос к API, выполЯнет его и получает ответ
+	 * Р¤РѕСЂРјРёСЂСѓРµС‚ Р·Р°РїСЂРѕСЃ Рє API, РІС‹РїРѕР»СЏРЅРµС‚ РµРіРѕ Рё РїРѕР»СѓС‡Р°РµС‚ РѕС‚РІРµС‚
 	 * @param $aData
 	 */
     public function get($aData)
@@ -154,26 +160,31 @@ class cNicApp {
         return $this->performHttpRequest($this->prepareRequest($aData));
     } // eof get
     /**
-     * ”ормирует запрос к API ( массив в строку ) 
+     * Р¤РѕСЂРјРёСЂСѓРµС‚ Р·Р°РїСЂРѕСЃ Рє API ( РјР°СЃСЃРёРІ РІ СЃС‚СЂРѕРєСѓ ) 
      * @param unknown_type $aData
      */
 	public function prepareRequest($aData){
 		$sRequestData = "";
 		$queryArray = array();
         foreach ($aData as $name => $value) {
-            $queryArray[] = $name.':'.$value."\r\n";
-        }
+    		if(is_array($value)) {
+    			$queryArray[] = "\r\n[".$name."]\r\n";
+    			foreach ($value as $sName => $sValue) {
+    				$queryArray[] = $sName.':'.$sValue."\r\n";	
+    			}
+    		} else {
+            	$queryArray[] = $name.':'.$value."\r\n";
+    		}
+    	}
         if (count($queryArray) > 0) {
             $sRequestData .= implode('', $queryArray);
         } else {
             $sRequestData .= '';
         }
-        var_dump($sRequestData);
-        return $sRequestData ;
-		
+        return iconv(self::sTo,self::sFrom,$sRequestData);
 	} // eof prepareRequest
 	/**
-	 * ‚ыполнЯет запрос к API 
+	 * Р’С‹РїРѕР»РЅСЏРµС‚ Р·Р°РїСЂРѕСЃ Рє API 
 	 * @param unknown_type $sBody
 	 */
 	public function performHttpRequest($sBody)
@@ -194,9 +205,9 @@ class cNicApp {
     	return $response;
     } // eof performHttpRequest
     /**
-     * ђазбор ответа в классы
-     * @param string $string - строка ответа удаленного сервера
-     * @param string $className - имЯ класса длЯ маппинга данных
+     * Р Р°Р·Р±РѕСЂ РѕС‚РІРµС‚Р° РІ РєР»Р°СЃСЃС‹
+     * @param string $string - СЃС‚СЂРѕРєР° РѕС‚РІРµС‚Р° СѓРґР°Р»РµРЅРЅРѕРіРѕ СЃРµСЂРІРµСЂР°
+     * @param string $className - РёРјСЏ РєР»Р°СЃСЃР° РґР»СЏ РјР°РїРїРёРЅРіР° РґР°РЅРЅС‹С…
      */
 	public static function importString($string, $className='Feed')
     {
