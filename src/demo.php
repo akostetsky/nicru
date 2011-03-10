@@ -2,7 +2,6 @@
 include_once("class/cNic.php");
 include_once("class/cClientLogin.php");
 
-
 $url = "https://www.nic.ru/dns/dealer";
 $user = "370/NIC-REG/adm";
 $pass = "dogovor";
