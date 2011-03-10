@@ -41,20 +41,21 @@ foreach ($data->entries as $entry) {
 
 $aData = array();
 $aData['password']="123password123";
+$aData['code']="500100732259";
 $aData['tech-password']="123techpassword123";
-$aData['org']="Joint Stock Company";
-$aData['org-r']="Закрытое Акционерное Общество";
-$aData['code']="1234567894";
-$aData['kpp']="123456789";
+$aData['person']="Sidor S Sidorov";
+$aData['person-r']="ИП Сидоров Сидор Сидорович";
 $aData['country']="RU";
 $aData['currency-id']="RUR";
-$aData['address-r']="123456, Москва, ул. Йобачкина, д.13а";
-$aData['p-addr']="123456, Москва, ул. Йобачкина, д.13а";
-$aData['d-addr']="123456, Москва, ул. Йобачкина, д.13а";
+$aData['passport']="XXX-AB 123456 выдан 123 отделением милиции г.Москвы, 30.01.1990 зарегистрирован по адресу: Москва, ул.Кошкина, д.15, кв.4";
+$aData['address-r']="123456 Москва, ул.Собачкина, д.13а, кв.78";
+$aData['birth-date']="11.11.1965";
+$aData['p-addr']="123456, Москва, ул.Кошкина, д.15, кв.4 Сидорову Сидору Сидоровичу";
+$aData['d-addr']="123456, Москва, ул.Кошкина, д.15, кв.4 ";
 $aData['phone']="+7 495 1234567";
-$aData['fax-no']="+7 495 1234567";
-$aData['e-mail']="finster.seele@gmail.com"; 
-$aData['mnt-nfy']="alexk@sl.ru"; 
+$aData['fax-no']="+7 495 1234560";
+$aData['e-mail']="finster.seele@gmail.com";
+$aData['mnt-nfy']="alexk@sl.ru";
 
 $query->CreatePbul($aData);
 $data = $service->getNicQuery($query);
@@ -62,13 +63,16 @@ foreach ($data->entries as $entry) {
 	echo "login Pbul: ".$entry->login."\n";
 }
 
-die("not yet!"); 
+
 
 $query->CreatePrs();
 $data = $service->getNicQuery($query);
 foreach ($data->entries as $entry) {
 	echo "login Prs: ".$entry->login."\n";
 }
+
+die("not yet!"); 
+
 
 $query->Search();
 $data = $service->getNicQuery($query);

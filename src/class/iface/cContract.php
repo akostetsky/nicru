@@ -31,7 +31,7 @@ class cContract extends cNicRequests {
 		$this->_params["operation"]="create";
 	}
 	/**
-	 * ‘оздание анкеты клиента длЯ индивидуального предпринимателЯ  (€Џ)
+	 * РЎРѕР·РґР°РЅРёРµ Р°РЅРєРµС‚С‹ РєР»РёРµРЅС‚Р° РґР»СЏ РёРЅРґРёРІРёРґСѓР°Р»СЊРЅРѕРіРѕ РїСЂРµРґРїСЂРёРЅРёРјР°С‚РµР»СЏ  (РРџ)
 	 * @param $aData
 	 */
 	public function CreatePbul($aData = array()){
@@ -39,14 +39,14 @@ class cContract extends cNicRequests {
 		$this->Create($aData);
 	} // eof CreatePbul
 	/**
-	 * ‘оздание анкеты клиента длЯ юридического лица
+	 * РЎРѕР·РґР°РЅРёРµ Р°РЅРєРµС‚С‹ РєР»РёРµРЅС‚Р° РґР»СЏ СЋСЂРёРґРёС‡РµСЃРєРѕРіРѕ Р»РёС†Р°
 	 */
 	public function CreateOrg($aData = array()){
 		$this->_aParam['contract-type']='ORG';
 		$this->Create($aData);
 	} // eof CreateOrg
 	/**
-	 * ‘оздание анкеты клиента длЯ физического лица
+	 * РЎРѕР·РґР°РЅРёРµ Р°РЅРєРµС‚С‹ РєР»РёРµРЅС‚Р° РґР»СЏ С„РёР·РёС‡РµСЃРєРѕРіРѕ Р»РёС†Р°
 	 * @param unknown_type $aData
 	 */
 	public function CreatePrs($aData = array()){
