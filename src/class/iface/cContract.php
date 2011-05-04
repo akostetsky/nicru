@@ -15,7 +15,6 @@ class cContract extends cNicRequests {
 	 * 
 	 */
 	public function __construct() {
-		
 		$this->_params["request"]="contract";
 		parent::__construct();
 	}
@@ -60,7 +59,10 @@ class cContract extends cNicRequests {
 		$aParam[self::sDataBlock] = $this->_aParam;
 		return $aParam;
     }
-    
+    public function Search($aData = array()) {
+    	$this->_aParam = array_merge($this->_aParam,$aData);
+		$this->_params["operation"]="search";
+    }
 	public function sGetFeed(){
 		return self::sFeed;
 	}

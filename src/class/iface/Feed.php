@@ -15,6 +15,7 @@ class Feed extends FeedData implements Iterator, ArrayAccess {
         }
     }
 	public function current (){ 
+		echo "current";
 		return $this->_entry[$this->_entryIndex];
 	}
 	public function key(){ 
@@ -31,16 +32,16 @@ class Feed extends FeedData implements Iterator, ArrayAccess {
 	}
 	public function offsetExists ( $offset ){ 
 		die(__METHOD__);
-			}
+	}
 	public function offsetGet (  $offset ){ 
-				die(__METHOD__);
-		}
+		die(__METHOD__);
+	}
 	public function offsetSet (  $offset ,  $value ){ 
 		die(__METHOD__);
-			}
+	}
 	public function offsetUnset (  $offset ){ 
 		die(__METHOD__);
-			}
+	}
 	public function count(){
         return count($this->_entry);
     }

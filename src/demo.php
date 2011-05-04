@@ -14,6 +14,10 @@ $query = $service->redeleg_online_gain();
 $query = $service->order_pickup_domain_ru_su();
 $query = $service->domain_net_com();
 */
+
+/**
+ * 
+ *
 $query = $service->newcContract();
 
 $aData = array();
@@ -38,10 +42,11 @@ $data = $service->getNicQuery($query);
 foreach ($data->entries as $entry) {
 	echo "login Org: ".$entry->login."\n";
 }
+*/
 
 /**
  * Тест на создание анкеты клиента для индивидуального предпринимателя (ИП)
- */
+ *
 $query = $service->newcContract();
 $aData = array();
 $aData['password']="123password123";
@@ -67,10 +72,11 @@ foreach ($data->entries as $entry) {
 	echo "login Pbul: ".$entry->login."\n";
 }
 unset($query);
+*/
 
 /**
  * тест на создание анкеты клиента для физического лица
- */
+ *
 $query = $service->newcContract();
 $aData = array();
 $aData['password']="123password123";
@@ -94,13 +100,44 @@ foreach ($data->entries as $entry) {
 }
 unset($query);
 
+*/
+
 /**
  * Тест на поиск анкет клиентов
  */
+echo "Contract Search start\n";
 $query = $service->newcContract();
-$query->Search();
+$aData = array();
+$aData['contracts-limit'] = "3";
+$aData['contracts-first'] = "1";
+
+//$aData['contract-num'] = "1123901/NIC-D";
+$aData['e-mail'] = "ivan@sidorov.ru";
+//$aData['domain'] = "yandex.ru";
+//$aData['identity'] = "identified";
+//$aData['is-resident'] = "YES";
+
+//$aData['org'] = "Sony";
+//$aData['org-r'] = "Сони";
+//$aData['code'] = "500100732259";
+
+//$aData['person'] = "Sidorov";
+//$aData['person-r'] = "Иван";
+//$aData['passport'] = "123456";
+
+$query->Search($aData);
 $data = $service->getNicQuery($query);
+
+echo "contracts-found ".$data->GetContractsTotal()."\r\n";
+echo "contracts-limit: ".$data->GetContractsLimit()."\r\n";
+
+foreach ($data->entries as $entry) {
+	echo "contract-num: ".$entry->contract_num."\n";
+	echo "is-resident: ".$entry->is_resident."\n";
+}
+
 unset($query);
+echo "Contract Search end\n";
 die("not yet!"); 
 
 

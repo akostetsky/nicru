@@ -66,10 +66,7 @@ class cNicApp {
 	/**
 	 * Удаляльщик 
 	 */
-	function __destruct() {
-		
-	//TODO - Insert your code here
-	} // eof __destruct
+	function __destruct() {	} // eof __destruct
 	public function __call($sMethod, $aArgs){
 		if (preg_match('/^new(\w+)/', $sMethod, $aMatches)){
 			$sClass = $aMatches[1];
