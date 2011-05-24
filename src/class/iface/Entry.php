@@ -11,7 +11,7 @@ class Entry extends FeedData {
         return $this->_baseAttributes;
     }
 	public function __get($var){
-  		return $this->_data[$var];
+		return $this->_data[$var];
     }
 }
 

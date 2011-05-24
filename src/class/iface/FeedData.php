@@ -49,9 +49,9 @@ class FeedData {
           
         }
         // Приведение массива в нормальный вид
-        foreach($return as $key => $val){
-			if(is_array($val) && (count($val) == 1) ) $return[$key] = $val[0];
-        }      
+        //foreach($return as $key => $val){
+		//	if(is_array($val) && (count($val) == 1) ) $return[$key] = $val[0];
+        //}      
         return $return;
     }
 	

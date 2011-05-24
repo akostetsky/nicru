@@ -52,8 +52,7 @@ class cContract extends cNicRequests {
 		$this->_aParam['contract-type']='PRS';
 		$this->Create($aData);
 	} // eof CreatePrs
-	public function getQueryData()
-    {
+	public function getQueryData(){
     	$aParam = array();
 		$aParam = array_merge($aParam, $this->getQueryString());
 		$aParam[self::sDataBlock] = $this->_aParam;
@@ -62,6 +61,16 @@ class cContract extends cNicRequests {
     public function Search($aData = array()) {
     	$this->_aParam = array_merge($this->_aParam,$aData);
 		$this->_params["operation"]="search";
+    }
+    public function Get($sContract){
+    	$aData['subject-contract'] = $sContract;
+    	$this->_aParam = array_merge($this->_aParam,$aData);
+    	$this->_params["operation"]="get";
+    }
+    public function Delete($sContract){
+    	$aData['subject-contract'] = $sContract;
+    	$this->_aParam = array_merge($this->_aParam,$aData);
+    	$this->_params["operation"]="delete";
     }
 	public function sGetFeed(){
 		return self::sFeed;

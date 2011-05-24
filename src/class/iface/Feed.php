@@ -15,7 +15,6 @@ class Feed extends FeedData implements Iterator, ArrayAccess {
         }
     }
 	public function current (){ 
-		echo "current";
 		return $this->_entry[$this->_entryIndex];
 	}
 	public function key(){ 
@@ -45,11 +44,24 @@ class Feed extends FeedData implements Iterator, ArrayAccess {
 	public function count(){
         return count($this->_entry);
     }
-    public function transferFromString($data){
+    public function transferFromString($data, $_DataHandler = null){
     	parent::transferFromString($data);
     	include_once("$this->_entryClassName.php");
-		$newEntry = new $this->_entryClassName($this->_aFeedData);
-		$this->_entry[] = $newEntry;
+    	if(is_null($_DataHandler)){
+    		die("_DataHandler is null");
+    	}else{
+    		if(array_key_exists($_DataHandler, $this->_aFeedData)){
+    			if(count($this->_aFeedData[$_DataHandler]) == 1){
+    					$newEntry = new $this->_entryClassName($this->_aFeedData[$_DataHandler]);
+						$this->_entry[] = $newEntry;	
+    			}else{
+    				foreach ($this->_aFeedData[$_DataHandler] as $entry) {
+						$newEntry = new $this->_entryClassName($entry);
+						$this->_entry[] = $newEntry;
+    				} // foreach
+    			} // if 
+    		} // if
+    	} // if		
     }
 }
 

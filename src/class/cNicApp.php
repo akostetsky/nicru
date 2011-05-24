@@ -71,30 +71,22 @@ class cNicApp {
 		if (preg_match('/^new(\w+)/', $sMethod, $aMatches)){
 			$sClass = $aMatches[1];
 			$foundClassName = null;
-            foreach ($this->_registeredPackages as $name) {
-				try {
+ 				try {
                      // Autoloading disabled on next line for compatibility
                      // with magic factories. See ZF-6660.
-                     if (!class_exists($name . '_' . $sClass, false)) {
+                     if (!class_exists($sClass, false)) {
               			include_once("iface/{$sClass}.php");
                      }
                      $foundClassName = $sClass;
-                     break;
+                     
                  } catch (Exception $e) {
                      // package wasn't here- continue searching
                  }
-            }
             if ($foundClassName != null){
                 $reflectionObj = new ReflectionClass($foundClassName);
                 $instance = $reflectionObj->newInstanceArgs($aArgs);
                 if ($instance instanceof Zend_Gdata_App_FeedEntryParent) {
                     $instance->setHttpClient($this->_httpClient);
-
-                    // Propogate version data
-                    $instance->setMajorProtocolVersion(
-                            $this->_majorProtocolVersion);
-                    $instance->setMinorProtocolVersion(
-                            $this->_minorProtocolVersion);
                 }
                 return $instance;
             } else {
@@ -120,11 +112,12 @@ class cNicApp {
      */
     public function getStatus($data){
     	$aStatus = array();
+    	trim($data);
     	$aData = explode("\n",$data);
     	foreach(array_slice($aData, 0, 2) as $value){
+    		if(empty($value)) continue;
     		$aTemp = explode(":", $value);
     		$aStatus[$aTemp[0]] = trim($aTemp[1]);
-    		
     	}
     	return ($aStatus["State"]=="200 OK")?false:true;
     }
@@ -137,12 +130,11 @@ class cNicApp {
 		$response = $this->get($aData);
         $QueryContent = $response->getBody();
         $QueryContent = iconv(self::sFrom,self::sTo,$QueryContent);
-       // echo "\n\n\nRSP:\n";
-       // print_r($QueryContent);
-       // echo "\n\n[eof]\n\n";
+       //echo "\n\n\nRSP:\n";
+       //print_r($QueryContent);
+       //echo "\n\n[eof]\n\n";
         if($this->getStatus($QueryContent)){
-        	print_r($QueryContent);
-        	throw new Exception("Unexpected API status");
+        	throw new Exception(print_r($QueryContent,true));
         	return null;
         }
         $feed = self::importString($QueryContent, $className);
@@ -178,6 +170,7 @@ class cNicApp {
         } else {
             $sRequestData .= '';
         }
+        var_dump($sRequestData);
         return iconv(self::sTo,self::sFrom,$sRequestData);
 	} // eof prepareRequest
 	/**

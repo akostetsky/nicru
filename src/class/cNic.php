@@ -1,13 +1,6 @@
 <?php
 include_once("cNicApp.php");
 class cNic extends cNicApp {
-	protected $_registeredPackages = array(
-    	'Zend_Gdata_Kind',
-        'Zend_Gdata_Extension',
-        'Zend_Gdata',
-        'Zend_Gdata_App_Extension',
-        'Zend_Gdata_App'
-	);
 	
 	//TODO - Insert your code here
 	function __construct($client = null) {
