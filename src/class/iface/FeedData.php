@@ -14,7 +14,13 @@ class FeedData {
 	public function	transferFromString($sData){
 		$this->_aFeedData = $this->aRecursionArray($sData, true);
 	}
-
+/**
+ * 
+ * Преобразование строк в массив
+ * @param string $str данные полученные от nic.ru 
+ * @param boolean $ProcessSections 
+ * TODO: есть бага с разбором многострочных полей
+ */
 	public function aRecursionArray($str, $ProcessSections=false){
         $lines  = explode("\n", $str);
         $return = Array();

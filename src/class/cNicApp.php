@@ -7,6 +7,7 @@
 class cNicApp {
 	const sFrom = "KOI8-R";
 	const sTo = "UTF-8";
+	private $bDebug = FALSE;
 	/**
 	 * Экземпляр класса HTTP_Request2
 	 * @var HTTP_Request2
@@ -30,7 +31,8 @@ class cNicApp {
 	 * Инициализация класса и сохранение класса  HTTP_Request2
 	 * @param unknown_type $client
 	 */
-	function __construct($client = null) {
+	function __construct($client = null, $bDebug = FALSE) {
+		$this->bDebug = $bDebug;
 		$this->setHttpClient($client);
 	}
 	/**
@@ -158,8 +160,14 @@ class cNicApp {
         foreach ($aData as $name => $value) {
     		if(is_array($value)) {
     			$queryArray[] = "\r\n[".$name."]\r\n";
-    			foreach ($value as $sName => $sValue) {
-    				$queryArray[] = $sName.':'.$sValue."\r\n";	
+    			foreach ($value as $sName => $sValue) {	
+    				if(is_array($sValue)){
+    					foreach ($sValue as $sSubValue) {
+    						$queryArray[] = $sName.':'.$sSubValue."\r\n";
+    					}
+    				}else{
+    					$queryArray[] = $sName.':'.$sValue."\r\n";
+    				}
     			}
     		} else {
             	$queryArray[] = $name.':'.$value."\r\n";
@@ -170,7 +178,7 @@ class cNicApp {
         } else {
             $sRequestData .= '';
         }
-        var_dump($sRequestData);
+        if($this->bDebug){ var_dump($sRequestData); }
         return iconv(self::sTo,self::sFrom,$sRequestData);
 	} // eof prepareRequest
 	/**

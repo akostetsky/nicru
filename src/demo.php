@@ -16,9 +16,6 @@ $query = $service->order_pickup_domain_ru_su();
 $query = $service->domain_net_com();
 */
 
-if(false){
-	die(1);
-
 /**
  * Создание анкеты клиента
  */
@@ -115,8 +112,8 @@ $aData = array();
 $aData['contracts-limit'] = "10";
 $aData['contracts-first'] = "1";
 
-//$aData['contract-num'] = "1123901/NIC-D";
-$aData['e-mail'] = "finster.seele@gmail.com";
+$aData['contract-num'] = $aCreatedNIC[0];
+//$aData['e-mail'] = "finster.seele@gmail.com";
 //$aData['domain'] = "yandex.ru";
 //$aData['identity'] = "identified";
 //$aData['is-resident'] = "YES";
@@ -134,8 +131,9 @@ $data = $service->getNicQuery($query);
 echo "\tcontracts-found ".$data->GetContractsTotal()."\r\n";
 echo "\tcontracts-limit: ".$data->GetContractsLimit()."\r\n";
 foreach ($data->entries as $entry) {
-	echo "\tcontract-num: ".$entry->contract_num."\n";
-	echo "\tis-resident: ".$entry->is_resident."\n";
+	foreach ($entry->aGetData() as $key => $name){
+		echo "\t".$key.":".$name."\n";
+	}
 }
 unset($data);
 unset($query);
@@ -146,10 +144,12 @@ echo "Contract Search end\n\n";
  */
 echo "=>Get Contract Data start\n";
 $query = $service->newcContract();
-$query->Get("288198/NIC-D");
+$query->Get($aCreatedNIC[0]);
 $data = $service->getNicQuery($query);
 $oContactEntry = $data->current();
-echo "\tStreet:".$oContactEntry->street."\n";
+foreach ($oContactEntry->aGetData() as $key => $name){
+	echo "\t".$key.":".$name."\n";
+}
 echo "Get Contract Data end\n\n";
 unset($oContactEntry);
 unset($data);
@@ -170,7 +170,7 @@ $query = $service->contract_id();
 */
 echo "=>Delete Contract Data start\n";
 $query = $service->newcContract();
-$query->Delete("1167160/NIC-D");
+$query->Delete($aCreatedNIC[0]);
 try {
 	$data = $service->getNicQuery($query);
 } catch (Exception $e) {
@@ -185,14 +185,14 @@ $query = $service->objects_search();
 $query = $service->services_search();
 $query = $service->domain_search();
 */
-} // DEBUG
+
 /*
  * Заказ на регистрацию домена в доменах RU, РФ или SU
  */
-echo "=>Order New Domain";
+echo "=>Order New Domain\n";
 $query = $service->newcDomain();
 $aData = array();
-$aData['subject-contract'] = "1167161/NIC-D";
+$aData['subject-contract'] = $aCreatedNIC[0];
 $aData['domain'] = "test".date("YmdHis").".ru";
 //$aData['domain'] = "test.su";
 $aData['descr'] = "Domain for test purpose";
@@ -200,16 +200,22 @@ $aData['e-mail'] = "finster.seele@gmail.com";
 $aData['phone'] = "+7 495 1234567";
 $aData['fax-no'] = "+7 495 1234568";
 // TODO: Чойта ns не принимаются
-//$aData['nserver'] = "ns2.sl.ru,ns1.sl.ru";
+$aData['nserver'][] = "ns1.sl.ru";
+$aData['nserver'][] = "ns4.sl.ru";
 
 $query->Order($aData);
 $data = $service->getNicQuery($query);
-var_dump($data);
 $oDomainEntry = $data->current();
-echo "\tOrder ID:".$oDomainEntry->order_id."\n";
+foreach ($oDomainEntry->aGetData() as $key => $name){
+	echo "\t".$key.":".$name."\n";
+}
+$iOrderId = $oDomainEntry->order_id;
 unset($oDomainEntry);
 unset($data);
 unset($query);
+
+
+
 /*
 $query = $service->order_new_domain_geo();
 $query = $service->domain_net_com();
@@ -232,13 +238,82 @@ $query = $service->order_update_domain_redirection();
 $query = $service->order_update_mailforwarding(); 
 $query = $service->order_update_hosting();
 $query = $service->order_upgrade_hosting();
-$query = $service->services_prolong();
-$query = $service->order_prolong();
-$query = $service->orders_search(); 
-$query = $service->orders_get();
-$query = $service->order_delete();
-
 */
+
+
+/*
+ * 
+ *$query = $service->services_prolong();
+$query = $service->order_prolong();
+*/
+/*
+ * Получение данных о заказах
+ */
+/*
+ * поиск сделанных заказов
+ */
+echo "=>Order Search start\n";
+$query = $service->newcOrder();
+$aData = array();
+$aData['subject-contract'] = "1167161/NIC-D";
+$aData['order_id']=$iOrderId;
+//$aData['submitted']="";
+//$aData['total']="";
+//$aData['state']="";
+//$aData['domain']="";
+//$aData['service']="";
+//$aData['orders-limit']="";
+//$aData['orders-first']=""; 
+$query->Search($aData);
+$data = $service->getNicQuery($query);
+echo "\tGetOrdersLimit: ".$data->GetOrdersLimit()."\n";
+echo "\tGetOrdersFound: ".$data->GetOrdersFound()."\n";
+echo "\tGetOrdersFirst: ".$data->GetOrdersFirst()."\n\n";
+foreach ($data->entries as $entry) {
+	foreach ($entry->aGetData() as $key => $name){
+		echo "\t".$key.":".$name."\n";
+	}
+}
+unset($data);
+unset($query);
+echo "Order Search end\n";
+
+/*
+ * получение информации о заказе
+ */ 
+echo "=>Order Get start\n";
+$query = $service->newcOrder();
+$query->Get($iOrderId);
+$data = $service->getNicQuery($query);
+foreach ($data->entries as $entry) {
+	foreach ($entry->aGetData() as $key => $name){
+		echo "\t".$key.":".$name."\n";
+	}
+}
+
+$oOrderItem = $data->GetOrderItem();
+echo "\n\n\tOrderItem dump\n";
+foreach ($oOrderItem->aGetData() as $key => $name){
+		echo "\t".$key.":".$name."\n";
+}
+unset($data);
+unset($query);
+echo "Order Get end\n";
+
+/*
+ * удаление заказа
+ */
+echo "=>Order Delete start\n";
+$query = $service->newcOrder();
+$query->Delete($iOrderId);
+try{
+	$data = $service->getNicQuery($query);
+} catch (Exception $e) {
+    echo "\tCaught exception: ",  $e->getMessage(), "\n";
+}
+unset($data);
+unset($query);
+echo "=>Order Delete end\n";
 /*
  * Баланс личного счета получении информации о балансе
  */
@@ -247,8 +322,9 @@ $query = $service->newcAccount();
 $query->Get();
 $data = $service->getNicQuery($query);
 $oAccountEntry = $data->current();
-echo "\tpayments: ".$oAccountEntry->payments."\n";
-echo "\tblockable: ".$oAccountEntry->blockable."\n";
+foreach ($oAccountEntry->aGetData() as $key => $name){
+		echo "\t".$key.":".$name."\n";
+}
 unset($oAccountEntry);
 unset($data);
 unset($query);

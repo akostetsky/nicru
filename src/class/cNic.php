@@ -1,11 +1,10 @@
 <?php
 include_once("cNicApp.php");
 class cNic extends cNicApp {
-	
+	const DebugFlag = TRUE;
 	//TODO - Insert your code here
-	function __construct($client = null) {
-		parent::__construct($client);
-	//TODO - Insert your code here
+	function __construct($client=null, $bDebug=false){
+		parent::__construct($client,$bDebug);
 	}
 	
 	/**

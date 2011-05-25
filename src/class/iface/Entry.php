@@ -13,6 +13,7 @@ class Entry extends FeedData {
 	public function __get($var){
 		return $this->_data[$var];
     }
+    public function aGetData(){ return $this->_data; }
 }
 
 ?>

@@ -48,7 +48,7 @@ class Feed extends FeedData implements Iterator, ArrayAccess {
     	parent::transferFromString($data);
     	include_once("$this->_entryClassName.php");
     	if(is_null($_DataHandler)){
-    		die("_DataHandler is null");
+    		throw new Exception("_DataHandler is null");
     	}else{
     		if(array_key_exists($_DataHandler, $this->_aFeedData)){
     			if(count($this->_aFeedData[$_DataHandler]) == 1){

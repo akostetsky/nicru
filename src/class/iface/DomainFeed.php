@@ -1,12 +1,11 @@
 <?php
 include_once("Feed.php");
-
-class AccountFeed extends Feed {
-	protected $_entryClassName = 'AccountEntry';
-	const _AccountHandler = "account";
+class DomainFeed extends Feed {
+	protected $_entryClassName = 'DomainEntry';
+	const _AccountHandler = "order";
 	public function transferFromString($data){
 		parent::transferFromString($data, self::_AccountHandler);
 	}
+	
 }
-
 ?>
