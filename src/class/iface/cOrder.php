@@ -1,5 +1,11 @@
 <?php
-
+/*
+ * cOrder.php - Класс cOrder
+ * Release Date: 26/05/2011                                              *
+ * Version 1.0 
+ * Author: Alexander Kostetsky
+ * Email: finster.seele@gmail.com       
+ */
 include_once("cNicRequests.php");
 class cOrder extends cNicRequests {
 	const sFeed = "OrderFeed";

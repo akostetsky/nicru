@@ -1,6 +1,13 @@
 <?php
+/*
+ * cNicApp.php - Класс cNicApp
+ * Release Date: 26/05/2011                                              *
+ * Version 1.0 
+ * Author: Alexander Kostetsky
+ * Email: finster.seele@gmail.com       
+ */
 /** 
- * Класс реализующий работу с API http://www.nic.ru/
+ * Класс реализующий работу с API RU-CENTER
  * @author Alexander Kostetsky
  * 
  */

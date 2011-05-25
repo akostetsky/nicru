@@ -1,5 +1,11 @@
 <?php
-
+/*
+ * Entry.php - Класс Entry
+ * Release Date: 26/05/2011                                              *
+ * Version 1.0 
+ * Author: Alexander Kostetsky
+ * Email: finster.seele@gmail.com       
+ */
 class Entry extends FeedData {
     protected $_baseAttributes = array();
     public function __construct($element = null)

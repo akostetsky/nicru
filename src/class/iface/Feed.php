@@ -1,4 +1,11 @@
 <?php
+/*
+ * Feed.php - Класс Feed
+ * Release Date: 26/05/2011                                              *
+ * Version 1.0 
+ * Author: Alexander Kostetsky
+ * Email: finster.seele@gmail.com       
+ */
 include_once("FeedData.php");
 class Feed extends FeedData implements Iterator, ArrayAccess {
 	protected $_entryIndex = 0;

@@ -1,4 +1,11 @@
 <?php
+/*
+ * cNicRequests.php - Класс cNicRequests
+ * Release Date: 26/05/2011                                              *
+ * Version 1.0 
+ * Author: Alexander Kostetsky
+ * Email: finster.seele@gmail.com       
+ */
 
 class cNicRequests {
 	protected $_params = array(

@@ -1,4 +1,11 @@
 <?php
+/*
+ * cContract.php - Класс cContract
+ * Release Date: 26/05/2011                                              *
+ * Version 1.0 
+ * Author: Alexander Kostetsky
+ * Email: finster.seele@gmail.com       
+ */
 include_once("cNicRequests.php");
 
 /** 

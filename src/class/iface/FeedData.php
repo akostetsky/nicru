@@ -1,5 +1,11 @@
 <?php
-
+/*
+ * FeedData.php - Класс FeedData
+ * Release Date: 26/05/2011                                              *
+ * Version 1.0 
+ * Author: Alexander Kostetsky
+ * Email: finster.seele@gmail.com       
+ */
 class FeedData {
 	protected $_aFeedData = array();
 

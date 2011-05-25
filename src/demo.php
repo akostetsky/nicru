@@ -1,4 +1,11 @@
 <?php
+/*
+ * demo.php - Nic.ru API tests
+ * Release Date: 26/05/2011                                              *
+ * Version 1.0 
+ * Author: Alexander Kostetsky
+ * Email: finster.seele@gmail.com       
+ */
 include_once("class/cNic.php");
 include_once("class/cClientLogin.php");
 
