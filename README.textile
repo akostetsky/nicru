@@ -1,2 +1,9 @@
 h2. Модуль для работы с NIC.RU для билинга WHMCS. 
-#26/05/2011 v0.1 Закончил NIC.RU API
+
+* 26/05/2011 v0.1 Закончил NIC.RU API
+
+
+h2. Инсталяция
+
+# Copy folder src to modules/registrars/nicru/
+# Copy file additionaldomainfields.php to ./includes/additionaldomainfields.php
