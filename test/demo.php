@@ -6,8 +6,8 @@
  * Author: Alexander Kostetsky
  * Email: finster.seele@gmail.com       
  */
-include_once("class/cNic.php");
-include_once("class/cClientLogin.php");
+include_once("../src/modules/registrars/nicru/class/cNic.php");
+include_once("../src/modules/registrars/nicru/class/cClientLogin.php");
 
 $url = "https://www.nic.ru/dns/dealer";
 $user = "370/NIC-REG/adm";
