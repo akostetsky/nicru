@@ -14,8 +14,9 @@ include_once("cNicApp.php");
  *
  */
 class cNic extends cNicApp {
-	/*
+	/**
 	 * Флаг отладки
+	 * @var const string
 	 */
 	const DebugFlag = TRUE;
 	/*

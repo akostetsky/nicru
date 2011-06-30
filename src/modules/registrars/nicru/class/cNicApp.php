@@ -12,8 +12,20 @@
  * 
  */
 class cNicApp {
+	/**
+	 * Кодировка запросов и ответов API  
+	 * @var string
+	 */
 	const sFrom = "KOI8-R";
+	/**
+	 * Кодировка в которой приходят данные в API
+	 * @var string
+	 */
 	const sTo = "UTF-8";
+	/**
+	 * Флаг отладки
+	 * @var bool
+	 */
 	private $bDebug = FALSE;
 	/**
 	 * Экземпляр класса HTTP_Request2
@@ -22,21 +34,24 @@ class cNicApp {
 	protected $_httpClient;
 	/**
 	 * Статический экземпляр класса HTTP_Request2
-	 * @var unknown_type
+	 * @var HTTP_Request2
 	 */
 	protected static $_staticHttpClient = null;
-	/*
+	/**
 	 * Константа URL API
+	 * @var string
 	 */
 	const sApiUrl = "https://www.nic.ru/dns/dealer";
-	/*
+	/**
 	 * Константа название формы для работы с API
+	 * @var string
 	 */
 	const sFormField = "SimpleRequest";
 	 
 	/**
 	 * Инициализация класса и сохранение класса  HTTP_Request2
-	 * @param unknown_type $client
+	 * @param HTTP_Request2 $client - экземпляр класса HTTP_Request2
+	 * @param bool $bDebug - флаг отладки
 	 */
 	function __construct($client = null, $bDebug = FALSE) {
 		$this->bDebug = $bDebug;
@@ -44,13 +59,15 @@ class cNicApp {
 	}
 	/**
 	 * Возвращает экземпляр класса HTTP_Request2
+	 * @return HTTP_Request2
 	 */
  	public function getHttpClient() {
         return $this->_httpClient;
     }
     /**
      * Сохранияет или создает экземплярпы класса HTTP_Request2 
-     * @param $client
+     * @param HTTP_Request2 $client
+     * @return cNicApp
      */
     public function setHttpClient($client) {
         if ($client === null) {
@@ -76,13 +93,18 @@ class cNicApp {
 	 * Удаляльщик 
 	 */
 	function __destruct() {	} // eof __destruct
+	/**
+	 * Перегруженный метод __call
+	 * 
+	 * Обеспечивает обработку вызовов вида new<class_name>
+	 * @param string $sMethod
+	 * @param array $aArgs
+	 */
 	public function __call($sMethod, $aArgs){
 		if (preg_match('/^new(\w+)/', $sMethod, $aMatches)){
 			$sClass = $aMatches[1];
 			$foundClassName = null;
  				try {
-                     // Autoloading disabled on next line for compatibility
-                     // with magic factories. See ZF-6660.
                      if (!class_exists($sClass, false)) {
               			include_once("iface/{$sClass}.php");
                      }
@@ -94,18 +116,20 @@ class cNicApp {
             if ($foundClassName != null){
                 $reflectionObj = new ReflectionClass($foundClassName);
                 $instance = $reflectionObj->newInstanceArgs($aArgs);
-                if ($instance instanceof Zend_Gdata_App_FeedEntryParent) {
-                    $instance->setHttpClient($this->_httpClient);
-                }
                 return $instance;
             } else {
-                require_once 'Zend/Gdata/App/Exception.php';
                 throw new Exception("Unable to find '${sClass}' in registered packages");
             }
         } else {
             throw new Exception("No such method ${sMethod}");
         }
 	} // eof __call
+	/**
+	 * Получение ответа 
+	 * @param array $aData
+	 * @param string $className
+	 * @return mixed 
+	 */
 	public function getQuery($aData, $className='Feed')
     {
         return $this->importUrl($aData, $className);
@@ -134,6 +158,7 @@ class cNicApp {
      * Формирование запроса и обработка ответа. 
      * @param array $aData - входящие данные
      * @param sting $className - имя класса для маппинга данных
+     * @return mixed 
      */
 	public function importUrl($aData, $className='Feed') {
 		$response = $this->get($aData);
@@ -156,7 +181,8 @@ class cNicApp {
     } // eof importUrl
 	/**
 	 * Формирует запрос к API, выполянет его и получает ответ
-	 * @param $aData
+	 * @param array $aData
+	 * @return 
 	 */
     public function get($aData)
     {
@@ -202,7 +228,8 @@ class cNicApp {
 	} // eof prepareRequest
 	/**
 	 * Выполняет запрос к API 
-	 * @param unknown_type $sBody
+	 * @param string $sBody
+	 * @return mixed 
 	 */
 	public function performHttpRequest($sBody)
     {
