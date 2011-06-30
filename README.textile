@@ -4,5 +4,6 @@ h2. Модуль для работы с NIC.RU для билинга WHMCS.
 
 h2. Инсталяция
 
-# Copy folder src to modules/registrars/nicru/
-# Copy file additionaldomainfields.php to ./includes/additionaldomainfields.php
+# Установить модуль HTTP_Request2
+# Скопировать собержимое папки src в корень биллинга.
+# Настроить биллинг
