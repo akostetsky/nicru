@@ -139,9 +139,14 @@ class cNicApp {
 		$response = $this->get($aData);
         $QueryContent = $response->getBody();
         $QueryContent = iconv(self::sFrom,self::sTo,$QueryContent);
-       //echo "\n\n\nRSP:\n";
-       //print_r($QueryContent);
-       //echo "\n\n[eof]\n\n";
+	    if($this->bDebug){
+			ob_start();
+			echo"\nQER:\n\n\n"; 
+			var_dump($QueryContent); 
+			echo "\n\n[eof]\n\n";
+			$result = ob_get_clean();
+	    	error_log($result, 0);
+	    }
         if($this->getStatus($QueryContent)){
         	throw new Exception(print_r($QueryContent,true));
         	return null;
@@ -185,7 +190,14 @@ class cNicApp {
         } else {
             $sRequestData .= '';
         }
-        if($this->bDebug){ var_dump($sRequestData); }
+        if($this->bDebug){ 
+			ob_start();
+			echo"\nRSP:\n\n\n"; 
+			var_dump($sRequestData); 
+			echo "\n\n[eof]\n\n";
+			$result = ob_get_clean();
+	    	error_log($result, 0);
+        }
         return iconv(self::sTo,self::sFrom,$sRequestData);
 	} // eof prepareRequest
 	/**
@@ -194,7 +206,7 @@ class cNicApp {
 	 */
 	public function performHttpRequest($sBody)
     {
-    	$this->_httpClient->setHeader("Content-Type","application/x-www-form-urlencoded");
+        $this->_httpClient->setHeader("Content-Type","application/x-www-form-urlencoded");
     	$this->_httpClient->addPostParameter(self::sFormField,$sBody);
     	try {
     		$response = $this->_httpClient->send();

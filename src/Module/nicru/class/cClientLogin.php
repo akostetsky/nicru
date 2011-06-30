@@ -15,10 +15,10 @@ class cClientLogin {
 	 */
 	public static function getHttpClient($sUser, $sPassword, $sApiUrl = self::DEFAULT_API_URL){
 	  if (! ($sUser && $sPassword)) {
-            throw new Exception("Please set your Google credentials before trying to authenticate");
+            throw new Exception("Error login and password");
 	  }
 	  try {
-	  	$client = new HTTP_Request2($sApiUrl,HTTP_Request2::METHOD_POST);
+	  	$client = new HTTP_Request2($sApiUrl,HTTP_Request2::METHOD_POST,array('ssl_verify_peer' => false));
 	  } catch (HTTP_Request2_Exception $e) {
 	  	throw new Exception($e->getMessage());
 	  }

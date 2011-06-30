@@ -54,7 +54,7 @@ class cDomain extends cNicRequests {
     				$this->_aParam['template']='domain_rf';
     				break;
     			default:
-    				throw new Exception("No TLD found ${sRoot}");
+    				throw new Exception("No TLD found: ${sRoot}");
     				break;
     		}
     	}else{

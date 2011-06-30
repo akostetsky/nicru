@@ -7,18 +7,204 @@
  * Author: Alexander Kostetsky
  * Email: finster.seele@gmail.com       
  */
+/**
+ * Инклудим классы API
+ */
+include_once("class/cNic.php");
+include_once("class/cClientLogin.php");
+/** 
+ * Первая очередь 
+ */ 
+/*
+ * Конфиг модуля
+ */
 function nicru_getConfigArray() {
-	echo __METHOD__;
 	$configarray = array(
-	 "Username" => array( "Type" => "text", "Size" => "20", "Description" => "Enter your username here", ),
-	 "Password" => array( "Type" => "password", "Size" => "20", "Description" => "Enter your password here", ),
+	 "PartnerLogin" => array( "Type" => "text", "Size" => "20", "Description" => "Like: 370/NIC-REG/adm", ),
+	 "PartnerPassword" => array( "Type" => "text", "Size" => "20", "Description" => "Like: dogovor", ),
+	 "PartnerUrl" => array("Type" => "text", "Size" => "100", "Description" => "Like: https://www.nic.ru/dns/dealer", ),
 	 "TestMode" => array( "Type" => "yesno", ),
 	);
 	return $configarray;
 }
+/*
+ * Регистрация домена  
+ */
+function nicru_RegisterDomain($params) {
+	error_log(" ". __METHOD__." ", 0);
+	error_log(print_r($params, true), 0);
+	error_log("START",0);
+	
+	$NicId = null;
+	
+	$username = $params["Username"];
+	$password = $params["Password"];
+	$testmode = $params["TestMode"];
+	$tld = $params["tld"];
+	$sld = $params["sld"];
+	$regperiod = $params["regperiod"];
+	$nameserver1 = $params["ns1"];
+	$nameserver2 = $params["ns2"];
+    $nameserver3 = $params["ns3"];
+    $nameserver4 = $params["ns4"];
+	# Registrant Details
+	$RegistrantFirstName = $params["firstname"];
+	$RegistrantLastName = $params["lastname"];
+	$RegistrantAddress1 = $params["address1"];
+	$RegistrantAddress2 = $params["address2"];
+	$RegistrantCity = $params["city"];
+	$RegistrantStateProvince = $params["state"];
+	$RegistrantPostalCode = $params["postcode"];
+	$RegistrantCountry = $params["country"];
+	$RegistrantEmailAddress = $params["email"];
+	$RegistrantPhone = $params["phonenumber"];
+	// # Admin Details
+	$AdminFirstName = $params["adminfirstname"];
+	$AdminLastName = $params["adminlastname"];
+	$AdminAddress1 = $params["adminaddress1"];
+	$AdminAddress2 = $params["adminaddress2"];
+	$AdminCity = $params["admincity"];
+	$AdminStateProvince = $params["adminstate"];
+	$AdminPostalCode = $params["adminpostcode"];
+	$AdminCountry = $params["admincountry"];
+	$AdminEmailAddress = $params["adminemail"];
+	$AdminPhone = $params["adminphonenumber"];
+	$NicId = $params['customfields1'];
 
+	
+	$url = $params["PartnerUrl"];
+	$user = $params["PartnerLogin"];
+	$pass = $params["PartnerPassword"];
+	
+	$aCreatedNIC = array();
+
+	$client = cClientLogin::getHttpClient($user, $pass, $url);
+	$service = new cNic($client, cNic::DebugFlag);
+	
+	
+	if(empty($NicId)){
+		$sPerson = $params["additionalfields"];
+		$sPersonData = array(); 
+		foreach ($sPerson as $key => $name){
+			if(!empty($name)){
+				preg_match('/^\<span style=display\:none\>(\w+)\<\/span\>/i', $key, $aMatches);
+				$sPersonData[$aMatches[1]] = $name;
+			}
+		}
+		// Search
+		$query = $service->newcContract();
+		$aData = array();
+		$aData['contracts-limit'] = "10";
+		$aData['contracts-first'] = "1";
+		$aData['person-r']=$sPersonData['person_r'];
+		$aData['passport']=$sPersonData['passport'];
+		$aData['e-mail']=$RegistrantEmailAddress;
+
+		$query->Search($aData);
+		$data = $service->getNicQuery($query);
+		if($data->GetContractsTotal() == 1){
+			$oContact = $data->current();
+			$NicId = $oContact->contract_num;
+			insertNicIdToDb($NicId);
+		}else{
+			// нашли много что брать то?
+			die("Error: more one");
+		}
+		unset($data);
+		unset($query);
+	}	
+	if(empty($NicId)){	
+		// Not found must create
+		switch($sPersonData['reg_to']){
+			case "Частное лицо(Physical person)":
+				$query = $service->newcContract();
+				$aData = array();
+				$aData['password']="dk3wo2e";
+				$aData['tech-password']="dk3wo2e";
+				$aData['person']=translitIt($sPersonData['person_r']);
+				$aData['person-r']=$sPersonData['person_r'];
+				$aData['country']="RU";
+				$aData['currency-id']="RUR";
+				$aData['passport']=$sPersonData['passport'];
+				$aData['birth-date']=$sPersonData['birth_date'];
+				$aData['p-addr']=$sPersonData['residence'];
+				$aData['phone']=$sPersonData['phone'];
+				$aData['fax-no']=$sPersonData['fax'];
+				$aData['e-mail']=$RegistrantEmailAddress;
+				$aData['mnt-nfy']="admin@sl.ru";
+
+				$query->CreatePrs($aData);
+				$data = $service->getNicQuery($query);
+				echo "\tlogin Prs: ".$data->login."\n";
+				$NicId = $data->login;
+				insertNicIdToDb($NicId);
+				unset($data);
+				unset($query);
+				break;
+			case "Организацию(Organization)":
+				break;
+			default:
+				error_log(print_r($sPerson, true), 0);
+				die("Error reg_to");
+				break;
+		}
+		insertNicIdToDb($NicId);
+    }
+
+	$query = $service->newcDomain();
+	$aData = array();
+	$aData['subject-contract'] = $NicId;
+	$aData['domain'] = 	$sld.".".$tld;
+    $aData['e-mail'] = $RegistrantEmailAddress;
+    $aData['phone'] = $RegistrantPhone;
+    $aData['fax-no'] = $RegistrantPhone;
+    $aData['nserver'][] = $nameserver1;
+    $aData['nserver'][] = $nameserver2;
+    $aData['nserver'][] = $nameserver3;
+    $aData['nserver'][] = $nameserver4;
+
+    $query->Order($aData);
+	$data = $service->getNicQuery($query);
+	$oDomainEntry = $data->current();
+	foreach ($oDomainEntry->aGetData() as $key => $name){
+		error_log("\t".$key.":".$name."\n", 0);
+	}
+	$iOrderId = $oDomainEntry->order_id;
+	error_log("NIC RU OrderId ".$iOrderId, 0);
+	unset($oDomainEntry);
+	unset($data);
+	unset($query);
+	
+	error_log(print_r($params, true), 0);
+//	$values["error"] = $error;
+	return $values;
+}
+/**
+ * Вторая очередь
+ */
+/**
+ * 
+ * Enter description here ...
+ * @param unknown_type $params
+ */
+function nicru_RenewDomain($params) {
+	error_log(" ". __METHOD__." ", 0);
+	$username = $params["Username"];
+	$password = $params["Password"];
+	$testmode = $params["TestMode"];
+	$tld = $params["tld"];
+	$sld = $params["sld"];
+	$regperiod = $params["regperiod"];
+	# Put your code to renew domain here
+	# If error, return the error message in the value below
+	$values["error"] = $error;
+	return $values;
+}
+
+
+/*
 function nicru_GetNameservers($params) {
-	echo __METHOD__;
+	error_log(" ". __METHOD__." ", 0);
 	$username = $params["Username"];
 	$password = $params["Password"];
 	$testmode = $params["TestMode"];
@@ -35,7 +221,7 @@ function nicru_GetNameservers($params) {
 }
 
 function nicru_SaveNameservers($params) {
-	echo __METHOD__;
+	error_log(" ". __METHOD__." ", 0);
 	$username = $params["Username"];
 	$password = $params["Password"];
 	$testmode = $params["TestMode"];
@@ -52,7 +238,7 @@ function nicru_SaveNameservers($params) {
 }
 
 function nicru_GetRegistrarLock($params) {
-	echo __METHOD__;
+	error_log(" ". __METHOD__." ", 0);
 	$username = $params["Username"];
 	$password = $params["Password"];
 	$testmode = $params["TestMode"];
@@ -68,7 +254,7 @@ function nicru_GetRegistrarLock($params) {
 }
 
 function nicru_SaveRegistrarLock($params) {
-	echo __METHOD__;
+	error_log(" ". __METHOD__." ", 0);
 	$username = $params["Username"];
 	$password = $params["Password"];
 	$testmode = $params["TestMode"];
@@ -86,7 +272,7 @@ function nicru_SaveRegistrarLock($params) {
 }
 
 function nicru_GetEmailForwarding($params) {
-	echo __METHOD__;
+	error_log(" ". __METHOD__." ", 0);
 	$username = $params["Username"];
 	$password = $params["Password"];
 	$testmode = $params["TestMode"];
@@ -101,7 +287,7 @@ function nicru_GetEmailForwarding($params) {
 }
 
 function nicru_SaveEmailForwarding($params) {
-	echo __METHOD__;
+	error_log(" ". __METHOD__." ", 0);
 	$username = $params["Username"];
 	$password = $params["Password"];
 	$testmode = $params["TestMode"];
@@ -115,7 +301,7 @@ function nicru_SaveEmailForwarding($params) {
 }
 
 function nicru_GetDNS($params) {
-	echo __METHOD__;
+	error_log(" ". __METHOD__." ", 0);
     $username = $params["Username"];
 	$password = $params["Password"];
 	$testmode = $params["TestMode"];
@@ -147,48 +333,9 @@ function nicru_SaveDNS($params) {
 	return $values;
 }
 
-function nicru_RegisterDomain($params) {
-	echo __METHOD__;
-	$username = $params["Username"];
-	$password = $params["Password"];
-	$testmode = $params["TestMode"];
-	$tld = $params["tld"];
-	$sld = $params["sld"];
-	$regperiod = $params["regperiod"];
-	$nameserver1 = $params["ns1"];
-	$nameserver2 = $params["ns2"];
-    $nameserver3 = $params["ns3"];
-    $nameserver4 = $params["ns4"];
-	# Registrant Details
-	$RegistrantFirstName = $params["firstname"];
-	$RegistrantLastName = $params["lastname"];
-	$RegistrantAddress1 = $params["address1"];
-	$RegistrantAddress2 = $params["address2"];
-	$RegistrantCity = $params["city"];
-	$RegistrantStateProvince = $params["state"];
-	$RegistrantPostalCode = $params["postcode"];
-	$RegistrantCountry = $params["country"];
-	$RegistrantEmailAddress = $params["email"];
-	$RegistrantPhone = $params["phonenumber"];
-	# Admin Details
-	$AdminFirstName = $params["adminfirstname"];
-	$AdminLastName = $params["adminlastname"];
-	$AdminAddress1 = $params["adminaddress1"];
-	$AdminAddress2 = $params["adminaddress2"];
-	$AdminCity = $params["admincity"];
-	$AdminStateProvince = $params["adminstate"];
-	$AdminPostalCode = $params["adminpostcode"];
-	$AdminCountry = $params["admincountry"];
-	$AdminEmailAddress = $params["adminemail"];
-	$AdminPhone = $params["adminphonenumber"];
-	# Put your code to register domain here
-	# If error, return the error message in the value below
-	$values["error"] = $error;
-	return $values;
-}
 
 function nicru_TransferDomain($params) {
-	echo __METHOD__;
+	error_log(" ". __METHOD__." ", 0);
 	$username = $params["Username"];
 	$password = $params["Password"];
 	$testmode = $params["TestMode"];
@@ -226,22 +373,9 @@ function nicru_TransferDomain($params) {
 	return $values;
 }
 
-function nicru_RenewDomain($params) {
-	echo __METHOD__;
-	$username = $params["Username"];
-	$password = $params["Password"];
-	$testmode = $params["TestMode"];
-	$tld = $params["tld"];
-	$sld = $params["sld"];
-	$regperiod = $params["regperiod"];
-	# Put your code to renew domain here
-	# If error, return the error message in the value below
-	$values["error"] = $error;
-	return $values;
-}
 
 function nicru_GetContactDetails($params) {
-	echo __METHOD__;
+	error_log(" ". __METHOD__." ", 0);
 	$username = $params["Username"];
 	$password = $params["Password"];
 	$testmode = $params["TestMode"];
@@ -259,7 +393,7 @@ function nicru_GetContactDetails($params) {
 }
 
 function nicru_SaveContactDetails($params) {
-	echo __METHOD__;
+	error_log(" ". __METHOD__." ", 0);
 	$username = $params["Username"];
 	$password = $params["Password"];
 	$testmode = $params["TestMode"];
@@ -279,7 +413,7 @@ function nicru_SaveContactDetails($params) {
 }
 
 function nicru_GetEPPCode($params) {
-    echo __METHOD__;
+    error_log(" ". __METHOD__." ", 0);
 	$username = $params["Username"];
 	$password = $params["Password"];
 	$testmode = $params["TestMode"];
@@ -293,7 +427,7 @@ function nicru_GetEPPCode($params) {
 }
 
 function nicru_RegisterNameserver($params) {
-    echo __METHOD__;
+    error_log(" ". __METHOD__." ", 0);
 	$username = $params["Username"];
 	$password = $params["Password"];
 	$testmode = $params["TestMode"];
@@ -308,7 +442,7 @@ function nicru_RegisterNameserver($params) {
 }
 
 function nicru_ModifyNameserver($params) {
-    echo __METHOD__;
+    error_log(" ". __METHOD__." ", 0);
 	$username = $params["Username"];
 	$password = $params["Password"];
 	$testmode = $params["TestMode"];
@@ -324,7 +458,7 @@ function nicru_ModifyNameserver($params) {
 }
 
 function nicru_DeleteNameserver($params) {
-    echo __METHOD__;
+    error_log(" ". __METHOD__." ", 0);
 	$username = $params["Username"];
 	$password = $params["Password"];
 	$testmode = $params["TestMode"];
@@ -336,5 +470,32 @@ function nicru_DeleteNameserver($params) {
     $values["error"] = $error;
     return $values;
 }
-
+*/
+/**
+ * функция превода текста с кириллицы в траскрипт
+ */
+function translitIt($str) {
+	$tr = array(
+        "А"=>"A","Б"=>"B","В"=>"V","Г"=>"G",
+        "Д"=>"D","Е"=>"E","Ж"=>"J","З"=>"Z","И"=>"I",
+        "Й"=>"Y","К"=>"K","Л"=>"L","М"=>"M","Н"=>"N",
+        "О"=>"O","П"=>"P","Р"=>"R","С"=>"S","Т"=>"T",
+        "У"=>"U","Ф"=>"F","Х"=>"H","Ц"=>"TS","Ч"=>"CH",
+        "Ш"=>"SH","Щ"=>"SCH","Ъ"=>"","Ы"=>"YI","Ь"=>"",
+        "Э"=>"E","Ю"=>"YU","Я"=>"YA","а"=>"a","б"=>"b",
+        "в"=>"v","г"=>"g","д"=>"d","е"=>"e","ж"=>"j",
+        "з"=>"z","и"=>"i","й"=>"y","к"=>"k","л"=>"l",
+        "м"=>"m","н"=>"n","о"=>"o","п"=>"p","р"=>"r",
+        "с"=>"s","т"=>"t","у"=>"u","ф"=>"f","х"=>"h",
+        "ц"=>"ts","ч"=>"ch","ш"=>"sh","щ"=>"sch","ъ"=>"y",
+        "ы"=>"yi","ь"=>"","э"=>"e","ю"=>"yu","я"=>"ya"
+	);
+    	return strtr($str,$tr);
+}
+/**
+ * Положим NicId в базу в customfields1
+ */
+function insertNicIdToDb($sNicId){
+	//TODO: А стоит ли?
+}
 ?>
