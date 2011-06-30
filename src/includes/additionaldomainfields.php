@@ -126,7 +126,6 @@ $additionaldomainfields[".ru"][] = array(
 	);
 
 $additionaldomainfields[".su"] = $additionaldomainfields[".ru"];
-$additionaldomainfields[".test"] = $additionaldomainfields[".su"];
 
 /*
 ## COM, NET DOMAINS REQUIREMENTS ##
