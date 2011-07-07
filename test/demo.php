@@ -15,14 +15,14 @@ $pass = "dogovor";
 $aCreatedNIC = array();
 
 $client = cClientLogin::getHttpClient($user, $pass, $url);
-$service = new cNic($client);
+$service = new cNic($client, cNic::DebugFlag);
 /*
 $query = $service->redeleg_online_lose();
 $query = $service->redeleg_online_gain();
 $query = $service->order_pickup_domain_ru_su();
 $query = $service->domain_net_com();
 */
-
+if(false){
 /**
  * Создание анкеты клиента
  */
@@ -246,13 +246,26 @@ $query = $service->order_update_mailforwarding();
 $query = $service->order_update_hosting();
 $query = $service->order_upgrade_hosting();
 */
-
+}
 
 /*
  * 
  *$query = $service->services_prolong();
 $query = $service->order_prolong();
 */
+echo "=>Order Prolong start\n";
+$query = $service->newcOrder();
+$aData = array();
+$aData['subject-contract'] = "1167161/NIC-D";
+$aData['domain'] = "TEST.RU";
+$query->Prolong($aData);
+$data = $service->getNicQuery($query);
+
+unset($data);
+unset($query);
+echo "Order Search end\n";
+
+die();
 /*
  * Получение данных о заказах
  */

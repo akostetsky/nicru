@@ -37,6 +37,13 @@ class cDomain extends cNicRequests {
 		$aParam[self::sDataBlock] = $this->_aParam;
 		return $aParam;
     }
+    /**
+     * 
+     * Enter description here ...
+     * @param unknown_type $sDomain
+     * @throws Exception
+     */
+    // TODO: вынести в отдельный класс
     private function __GetServiceAndTemplate($sDomain){
     	if (preg_match('/^[-a-z0-9]+\.([a-z]{2,6})$/', strtolower($sDomain), $aMatches)){
 			$sRoot = $aMatches[1];

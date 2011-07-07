@@ -12,20 +12,17 @@
  */
 include_once("class/cNic.php");
 include_once("class/cClientLogin.php");
-/** 
- * Первая очередь 
- */ 
 /*
  * Конфиг модуля
  */
 function nicru_getConfigArray() {
-	$configarray = array(
-	 "PartnerLogin" => array( "Type" => "text", "Size" => "20", "Description" => "Like: 370/NIC-REG/adm", ),
-	 "PartnerPassword" => array( "Type" => "text", "Size" => "20", "Description" => "Like: dogovor", ),
-	 "PartnerUrl" => array("Type" => "text", "Size" => "100", "Description" => "Like: https://www.nic.ru/dns/dealer", ),
-	 "TestMode" => array( "Type" => "yesno", ),
-	);
-	return $configarray;
+     $configarray = array(
+      "PartnerLogin" => array( "Type" => "text", "Size" => "20", "Description" => "Like: 370/NIC-REG/adm", ),
+      "PartnerPassword" => array( "Type" => "text", "Size" => "20", "Description" => "Like: dogovor", ),
+      "PartnerUrl" => array("Type" => "text", "Size" => "100", "Description" => "Like: https://www.nic.ru/dns/dealer", ),
+      "TestMode" => array( "Type" => "yesno", ),
+	 );
+     return $configarray;
 }
 /*
  * Регистрация домена  
@@ -180,25 +177,56 @@ function nicru_RegisterDomain($params) {
 	return $values;
 }
 /**
- * Вторая очередь
- */
-/**
  * 
- * Enter description here ...
- * @param unknown_type $params
+ * Продление доменов
+ * @param array $params
  */
 function nicru_RenewDomain($params) {
-	error_log(" ". __METHOD__." ", 0);
-	$username = $params["Username"];
-	$password = $params["Password"];
-	$testmode = $params["TestMode"];
-	$tld = $params["tld"];
-	$sld = $params["sld"];
-	$regperiod = $params["regperiod"];
-	# Put your code to renew domain here
-	# If error, return the error message in the value below
-	$values["error"] = $error;
-	return $values;
+    error_log(" ". __METHOD__." ", 0);
+    error_log(print_r($params, true), 0);
+    $tld = $params["tld"];
+    $sld = $params["sld"];
+    //$regperiod = $params["regperiod"];
+	$url = $params["PartnerUrl"];
+	$user = $params["PartnerLogin"];
+	$pass = $params["PartnerPassword"];
+	
+	$client = cClientLogin::getHttpClient($user, $pass, $url);
+	$service = new cNic($client, cNic::DebugFlag);
+/**
+ * Поиск контакта по домену
+ */
+	$query = $service->newcContract();
+    $aData = array();
+    $aData['contracts-limit'] = "10";
+    $aData['contracts-first'] = "1";
+    $aData['domain'] = 	$sld.".".$tld;
+    $query->Search($aData);
+    $data = $service->getNicQuery($query);
+    if($data->GetContractsTotal() == 1){
+        $oContact = $data->current();
+        $NicId = $oContact->contract_num;
+        insertNicIdToDb($NicId);
+    }else{
+		// нашли много что брать то?
+		die("Error: more one or not found.");
+	}
+	unset($data);
+	unset($query);
+/**
+ * Запрос на продление домена 
+ */	
+	$query = $service->newcOrder();
+	$aData = array();
+	$aData['subject-contract'] = $NicId;
+	$aData['domain'] = 	$sld.".".$tld;
+	$query->Prolong($aData);
+	$data = $service->getNicQuery($query);
+	unset($data);
+	unset($query);
+    //TODO: Отобразить ошибку
+    $values["error"] = $error;
+    return $values;
 }
 
 
