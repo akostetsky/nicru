@@ -201,7 +201,6 @@ function nicru_RenewDomain($params) {
     $aData['contracts-limit'] = "10";
     $aData['contracts-first'] = "1";
     $aData['domain'] = 	$sld.".".$tld;
-    $aData['prolong']="1";
     $query->Search($aData);
     $data = $service->getNicQuery($query);
     if($data->GetContractsTotal() <= 1){
@@ -221,6 +220,7 @@ function nicru_RenewDomain($params) {
 	$aData = array();
 	$aData['subject-contract'] = $NicId;
 	$aData['domain'] = 	$sld.".".$tld;
+    $aData['prolong']="1";
 	$query->Prolong($aData);
 	$data = $service->getNicQuery($query);
 	unset($data);
