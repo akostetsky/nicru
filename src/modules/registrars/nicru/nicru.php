@@ -201,9 +201,10 @@ function nicru_RenewDomain($params) {
     $aData['contracts-limit'] = "10";
     $aData['contracts-first'] = "1";
     $aData['domain'] = 	$sld.".".$tld;
+    $aData['prolong']="1";
     $query->Search($aData);
     $data = $service->getNicQuery($query);
-    if($data->GetContractsTotal() == 1){
+    if($data->GetContractsTotal() <= 1){
         $oContact = $data->current();
         $NicId = $oContact->contract_num;
         insertNicIdToDb($NicId);
@@ -230,7 +231,7 @@ function nicru_RenewDomain($params) {
 }
 
 
-/*
+
 function nicru_GetNameservers($params) {
 	error_log(" ". __METHOD__." ", 0);
 	$username = $params["Username"];
@@ -498,7 +499,7 @@ function nicru_DeleteNameserver($params) {
     $values["error"] = $error;
     return $values;
 }
-*/
+
 /**
  * функция превода текста с кириллицы в траскрипт
  */
