@@ -2,7 +2,7 @@
 /*
  * nicru.php - Registrar Module for WHMCS 4.5
  * Template: Registrar Module Development Kit for WHMCS 4.5
- * Release Date: 26/05/2011                                              *
+ * Release Date: 26/05/2011                                              
  * Version 1.0 
  * Author: Alexander Kostetsky
  * Email: finster.seele@gmail.com       
@@ -16,13 +16,13 @@ include_once("class/cClientLogin.php");
  * Конфиг модуля
  */
 function nicru_getConfigArray() {
-     $configarray = array(
-      "PartnerLogin" => array( "Type" => "text", "Size" => "20", "Description" => "Like: 370/NIC-REG/adm", ),
-      "PartnerPassword" => array( "Type" => "text", "Size" => "20", "Description" => "Like: dogovor", ),
-      "PartnerUrl" => array("Type" => "text", "Size" => "100", "Description" => "Like: https://www.nic.ru/dns/dealer", ),
-      "TestMode" => array( "Type" => "yesno", ),
-	 );
-     return $configarray;
+	$configarray = array(
+		"PartnerLogin" => array( "Type" => "text", "Size" => "20", "Description" => "Like: 370/NIC-REG/adm", ),
+    	"PartnerPassword" => array( "Type" => "text", "Size" => "20", "Description" => "Like: dogovor", ),
+    	"PartnerUrl" => array("Type" => "text", "Size" => "100", "Description" => "Like: https://www.nic.ru/dns/dealer", ),
+    	"TestMode" => array( "Type" => "yesno", ),
+	);
+	return $configarray;
 }
 /*
  * Регистрация домена  
@@ -55,6 +55,7 @@ function nicru_RegisterDomain($params) {
 	$RegistrantCountry = $params["country"];
 	$RegistrantEmailAddress = $params["email"];
 	$RegistrantPhone = $params["phonenumber"];
+	$RegistrantFax = $params["faxnumber"];
 	// # Admin Details
 	$AdminFirstName = $params["adminfirstname"];
 	$AdminLastName = $params["adminlastname"];
@@ -154,7 +155,7 @@ function nicru_RegisterDomain($params) {
 	$aData['domain'] = 	$sld.".".$tld;
     $aData['e-mail'] = $RegistrantEmailAddress;
     $aData['phone'] = $RegistrantPhone;
-    $aData['fax-no'] = $RegistrantPhone;
+    $aData['fax-no'] = $RegistrantFax;
     $aData['nserver'][] = $nameserver1;
     $aData['nserver'][] = $nameserver2;
     $aData['nserver'][] = $nameserver3;
@@ -402,7 +403,10 @@ function nicru_TransferDomain($params) {
 	return $values;
 }
 
-
+/**
+ * Получение деталей контакта по домену из nic.ru
+ * @param unknown_type $params
+ */
 function nicru_GetContactDetails($params) {
 	error_log(" ". __METHOD__." ", 0);
 	$username = $params["Username"];
@@ -410,6 +414,9 @@ function nicru_GetContactDetails($params) {
 	$testmode = $params["TestMode"];
 	$tld = $params["tld"];
 	$sld = $params["sld"];
+	
+	
+	
 	# Put your code to get WHOIS data here
 	# Data should be returned in an array as follows
 	$values["Registrant"]["First Name"] = $firstname;
@@ -420,7 +427,11 @@ function nicru_GetContactDetails($params) {
 	$values["Tech"]["Last Name"] = $techlastname;
 	return $values;
 }
-
+/**
+ * Сохранить данные контакта в nic.ru
+ * Enter description here ...
+ * @param unknown_type $params
+ */
 function nicru_SaveContactDetails($params) {
 	error_log(" ". __METHOD__." ", 0);
 	$username = $params["Username"];
